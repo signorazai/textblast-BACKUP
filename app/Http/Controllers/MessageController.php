@@ -76,8 +76,7 @@ class MessageController extends Controller
             }
         }
 
-        // Update the key name for schedule_type
-        $data['schedule_type'] = $request->input('schedule', 'immediate'); // This sets 'schedule_type' as 'immediate' or 'scheduled'
+        $data['schedule_type'] = $request->input('schedule', 'immediate');
         $data['scheduled_at'] = $request->input('scheduled_date');
 
         return view('admin.review-message', compact('data', 'campus', 'filterNames'));
@@ -254,21 +253,23 @@ class MessageController extends Controller
 
     protected function scheduleMessage(Request $request, Carbon $scheduledAt, $userId)
     {
-        SendScheduledMessage::dispatch($request->all(), $userId)->delay($scheduledAt);
+        // Ensure the scheduled_at key is included when dispatching the job
+        $data = $request->all();
+        $data['scheduled_at'] = $scheduledAt;
+
+        SendScheduledMessage::dispatch($data, $userId)->delay($scheduledAt);
 
         $this->logMessage($request, $userId, 'scheduled', $scheduledAt);
     }
 
     public function getMessageLogs()
-{
-    $messageLogs = MessageLog::with('user')->orderBy('created_at', 'desc')->get();
+    {
+        $messageLogs = MessageLog::with('user')->orderBy('created_at', 'desc')->get();
+        // Ensure that scheduled_at is converted to a Carbon instance
+        $messageLogs->each(function ($log) {
+            $log->scheduled_at = $log->scheduled_at ? Carbon::parse($log->scheduled_at) : null;
+        });
 
-    // Ensure that scheduled_at is converted to a Carbon instance
-    $messageLogs->each(function($log) {
-        $log->scheduled_at = $log->scheduled_at ? Carbon::parse($log->scheduled_at) : null;
-    });
-
-    return view('admin.app-management', compact('messageLogs'));
-}
-
+        return view('admin.app-management', compact('messageLogs'));
+    }
 }
