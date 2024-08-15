@@ -30,20 +30,19 @@ class SendScheduledMessage implements ShouldQueue
     public function handle(MoviderService $moviderService)
     {
         $broadcastType = $this->data['broadcast_type'];
-
+    
         // Send the message to the recipients based on the broadcast type
         if ($broadcastType === 'students' || $broadcastType === 'all') {
             $this->sendBulkMessages($moviderService, 'students');
         }
-
+    
         if ($broadcastType === 'employees' || $broadcastType === 'all') {
             $this->sendBulkMessages($moviderService, 'employees');
         }
-
+    
         // Log the sent message with the correct sent time
         $this->logMessage('scheduled', now());
     }
-
 
     protected function sendBulkMessages(MoviderService $moviderService, $recipientType)
     {
@@ -122,7 +121,7 @@ class SendScheduledMessage implements ShouldQueue
     protected function logMessage($scheduleType, $sentAt)
     {
         $sentAt = Carbon::parse($sentAt)->timezone(config('app.timezone'));
-
+        
         MessageLog::create([
             'user_id' => $this->userId,
             'recipient_type' => $this->data['broadcast_type'],

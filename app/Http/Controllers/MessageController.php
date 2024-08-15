@@ -82,7 +82,6 @@ class MessageController extends Controller
         return view('admin.review-message', compact('data', 'campus', 'filterNames'));
     }
 
-
     public function broadcastToRecipients(Request $request)
     {
         $broadcastType = $request->broadcast_type;
@@ -93,8 +92,6 @@ class MessageController extends Controller
         if ($scheduleType === 'scheduled' && $scheduledDate) {
             $scheduledAt = Carbon::parse($scheduledDate);
             $this->scheduleMessage($request, $scheduledAt, $userId);
-
-            $this->logMessage($request, $userId, 'scheduled', $scheduledAt);
 
             return redirect()->route('admin.messages')->with('success', 'Message scheduled successfully.');
         } else {
@@ -256,17 +253,19 @@ class MessageController extends Controller
         // Ensure the scheduled_at key is included when dispatching the job
         $data = $request->all();
         $data['scheduled_at'] = $scheduledAt;
-
+    
         SendScheduledMessage::dispatch($data, $userId)->delay($scheduledAt);
-
+    
         $this->logMessage($request, $userId, 'scheduled', $scheduledAt);
     }
+    
 
     public function getMessageLogs()
     {
         $messageLogs = MessageLog::with('user')->orderBy('created_at', 'desc')->get();
+
         // Ensure that scheduled_at is converted to a Carbon instance
-        $messageLogs->each(function ($log) {
+        $messageLogs->each(function($log) {
             $log->scheduled_at = $log->scheduled_at ? Carbon::parse($log->scheduled_at) : null;
         });
 
