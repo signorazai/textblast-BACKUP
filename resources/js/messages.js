@@ -1,5 +1,3 @@
-import './bootstrap';
-
 // Directly embedded JavaScript
 document.addEventListener('DOMContentLoaded', function () {
     // Initialize filters on page load

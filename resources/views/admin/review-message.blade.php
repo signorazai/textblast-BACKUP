@@ -35,10 +35,13 @@
         </div>
 
         <!-- Display the message -->
-        <div class="mb-4">
+        <div class="mb-6">
             <h2 class="text-xl mb-2 font-semibold">Message</h2>
-            <div class="message-content" style="line-height: 1.5;">
-                {!! nl2br(e($data['message'])) !!}
+            <!-- Message container with fixed height and border -->
+            <div class="border border-gray-300 p-4 rounded-md overflow-y-auto" style="height: 18rem;">
+                <p class="text-sm leading-relaxed">
+                    {!! nl2br(e($data['message'])) !!}
+                </p>
             </div>
         </div>
 
@@ -89,12 +92,12 @@
     </div>
 
     <div class="w-1/3 flex justify-end">
-        <div class="relative">
+        <div class="relative" style="width: 18rem;"> <!-- Adjusted width -->
             <!-- iPhone Mockup Image -->
-            <img src="{{ asset('images/iphone-mockup.png') }}" alt="iPhone Mockup" class="w-full h-auto">
+            <img src="{{ asset('images/iPhone15Mockup.png') }}" alt="iPhone Mockup" class="w-full h-auto">
 
             <!-- User Icon and Name -->
-            <div class="absolute top-[12%] left-[15%] w-[70%] h-[10%] flex items-center justify-center space-x-2">
+            <div class="absolute top-[10%] left-[10%] w-[80%] h-[10%] flex items-center justify-center space-x-2">
                 <!-- User Icon -->
                 <img src="{{ asset('images/profile-user.png') }}" alt="User Icon" class="w-6 h-6">
                 <!-- User Name -->
@@ -102,12 +105,12 @@
             </div>
 
             <!-- Message Content -->
-            <div class="absolute top-[22%] left-[14%] w-[79%] h-[70%] p-2 text-left bg-transparent overflow-y-auto space-y-1">
-                <div class="bg-gray-200 rounded-2xl p-2 text-gray-900" style="font-size: 8px; line-height: 1; max-width: 80%; display: inline-block;">
+            <div class="absolute top-[20%] left-[14%] w-[80%] h-[65%] p-2 text-left bg-transparent overflow-y-auto space-y-1">
+                <div class="bg-gray-200 p-2 text-gray-900" style="font-size: 9px; line-height: 1; max-width: 80%; display: inline-block; border-radius: 0.5rem;">
                     {!! nl2br(e($data['message'])) !!}
                 </div>
             </div>
-        </div>
     </div>
+
 </div>
 @endsection
