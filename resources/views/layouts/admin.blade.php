@@ -148,8 +148,8 @@
     <div class="bg-white w-73 flex flex-col justify-between fixed h-full z-50">
         <!-- Menu -->
         <div>
-            <div class="flex items-center my-5 align-center pl-4">
-                <img src="/images/SePhi Favicon.png" class="w-16 h-auto" />
+            <div class="flex items-center my-5 align-center pl-6">
+                <img src="/images/SePhi Favicon.png" class="w-14 h-auto pr-2" />
                 <h1 class="text-gradient font-semibold text-xl">Text Broadcasting</h1>
             </div>
 
