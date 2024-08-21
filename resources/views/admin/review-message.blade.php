@@ -8,7 +8,7 @@
     <div class="w-2/3">
         <!-- Display the filters and message for review -->
         <div class="mb-4">
-            <div class="mb-4">
+            <div class="mb-2">
                 <label class="block mb-2 text-md font-medium text-gray-700">Sending To</label>
                 <p class="border rounded-md p-2">
                     {{ trim($campus) }},
@@ -23,7 +23,9 @@
                     {{ trim($filterNames['type']) }},
                     @endif
                 </p>
-                <small>Total Recipients {{ $totalRecipients }}</small>
+            </div>
+            <div class="text-right mb-3">
+                <small class="font-medium text-gray-700">Total Recipients: {{ $totalRecipients }}</small>
             </div>
 
             <div class="mb-4">
