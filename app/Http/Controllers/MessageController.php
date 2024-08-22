@@ -146,13 +146,16 @@ class MessageController extends Controller
             $errorDetails .= (string) $employeeResult['errorDetails'];
         }
 
-        $this->logMessage($request, $userId, 'immediate');
+        $logId = $this->logMessage($request, $userId, 'immediate');
 
         if ($successCount > 0) {
             session()->flash('success', "Messages sent successfully to $successCount recipients." . $errorDetails);
         } else {
             session()->flash('error', "Failed to send messages to $errorCount recipients." . $errorDetails);
         }
+
+        // Update the message log with status
+        $this->updateMessageLogStatus($logId, 'Sent');
     }
 
     protected function sendBulkMessages(Request $request, $recipientType)
@@ -262,14 +265,29 @@ class MessageController extends Controller
 
     protected function logMessage(Request $request, $userId, $scheduleType, $scheduledAt = null)
     {
-        MessageLog::create([
+        $status = $scheduleType === 'immediate' ? 'Sent' : 'Pending'; // Set status based on schedule type
+
+        $log = MessageLog::create([
             'user_id' => $userId,
             'recipient_type' => $request->broadcast_type,
             'content' => $request->message,
             'schedule' => $scheduleType === 'scheduled' && $scheduledAt ? 'scheduled' : 'immediate',
             'scheduled_at' => $scheduledAt,
-            'created_at' => now(),
+            'sent_at' => $scheduleType === 'immediate' ? now() : null, // Set sent_at for immediate messages
+            'status' => $status, // Save the status
         ]);
+
+        return $log->id; // Return the log ID
+    }
+
+    protected function updateMessageLogStatus($logId, $status)
+    {
+        $messageLog = MessageLog::find($logId);
+        if ($messageLog) {
+            $messageLog->sent_at = now();
+            $messageLog->status = $status;
+            $messageLog->save();
+        }
     }
 
     protected function scheduleMessage(Request $request, Carbon $scheduledAt, $userId)
@@ -278,9 +296,13 @@ class MessageController extends Controller
         $data = $request->all();
         $data['scheduled_at'] = $scheduledAt;
 
-        SendScheduledMessage::dispatch($data, $userId)->delay($scheduledAt);
+        // Log the message and get the log ID
+        $logId = $this->logMessage($request, $userId, 'scheduled', $scheduledAt);
 
-        $this->logMessage($request, $userId, 'scheduled', $scheduledAt);
+        // Pass the log ID to the job
+        $data['log_id'] = $logId;
+
+        SendScheduledMessage::dispatch($data, $userId)->delay($scheduledAt);
     }
 
 
