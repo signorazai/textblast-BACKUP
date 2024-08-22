@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log; // Import the Log facade
 use App\Models\College;
 use App\Models\Program;
 
@@ -45,11 +46,11 @@ class ImportController extends Controller
                     );
                 } else {
                     // Log or handle the case where the college does not exist
-                    \Log::warning("College ID {$remoteProgram->CollegeID} not found. Program ID {$remoteProgram->ProgID} skipped.");
+                    Log::warning("College ID {$remoteProgram->CollegeID} not found. Program ID {$remoteProgram->ProgID} skipped.");
                 }
             }
 
-            return response()->json(['success' => 'Colleges and Programs imported successfully!']);
+            return response()->json(['success' => 'Data imported successfully!']);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
