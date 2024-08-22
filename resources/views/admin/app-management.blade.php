@@ -5,10 +5,31 @@
 @section('content')
 
 {{-- Import Button --}}
-<!-- <button type="submit"
+<button type="button" id="importButton"
     class="btn btn-primary absolute right-11 top-10 bg-green-500 py-2 px-4 text-white font-bold rounded-lg shadow-md hover:bg-green-600 hover:shadow-lg hover:text-gray-100">
     Import
-</button> -->
+</button>
+<script>
+    document.getElementById('importButton').addEventListener('click', function () {
+    fetch('{{ route('import.data') }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.success);
+        } else if (data.error) {
+            alert('Import failed: ' + data.error);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
+</script>
+
 
 <div class="container mx-auto">
     <div class="bg-white p-6 rounded-lg shadow-lg">

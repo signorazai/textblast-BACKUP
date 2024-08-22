@@ -7,6 +7,7 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\MessageTemplateController;
 use App\Http\Controllers\SubAdminController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ImportController;
 
 // Authentication Routes
 Route::get('/', [AuthController::class, 'index']);
@@ -67,3 +68,7 @@ Route::get('/api/filters/college/{collegeId}/programs', [FilterController::class
 Route::get('/api/filters/types/{campusId}/{officeId}/{statusId?}', [FilterController::class, 'getTypesByOffice']);
 Route::get('/api/contacts', [FilterController::class, 'getContacts']);
 Route::get('/api/recipients/count', [MessageController::class, 'getRecipientCount']);
+
+// Import
+Route::post('/import', [ImportController::class, 'importData'])->name('import.data');
+
