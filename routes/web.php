@@ -26,6 +26,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/review-message', [MessageController::class, 'reviewMessage'])->name('admin.reviewMessage');
     Route::post('/admin/send-messages', [MessageController::class, 'sendBulkMessages'])->name('admin.send-messages');
     Route::post('/admin/broadcast-employees', [MessageController::class, 'broadcastToEmployees'])->name('admin.broadcastToEmployees');
+    // Message Logs
+    Route::get('/admin/message-logs', [MessageController::class, 'getMessageLogs'])->name('admin.messageLogs');
 
     // Message Templates CRUD
     Route::get('/admin/app-management/message-templates', [MessageTemplateController::class, 'index'])->name('message_templates.index'); // List templates
@@ -71,4 +73,3 @@ Route::get('/api/recipients/count', [MessageController::class, 'getRecipientCoun
 
 // Import
 Route::post('/import', [ImportController::class, 'importData'])->name('import.data');
-

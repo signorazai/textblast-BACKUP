@@ -16,7 +16,10 @@ class MessageLog extends Model
         'schedule',
         'scheduled_at',
         'sent_at',
-        'status', // Add status here
+        'status',
+        'total_recipients',       // Add total_recipients field
+        'sent_count',             // Add sent_count field
+        'failed_count',           // Add failed_count field
     ];
 
     protected $casts = [
@@ -24,12 +27,35 @@ class MessageLog extends Model
         'sent_at' => 'datetime',
     ];
 
-    
     /**
      * Get the user that sent the message.
      */
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Calculate the success rate of the message delivery.
+     *
+     * @return float
+     */
+    public function getSuccessRateAttribute()
+    {
+        if ($this->total_recipients > 0) {
+            return ($this->sent_count / $this->total_recipients) * 100;
+        }
+
+        return 0;
+    }
+
+    /**
+     * Determine if the message was fully delivered.
+     *
+     * @return bool
+     */
+    public function getIsFullyDeliveredAttribute()
+    {
+        return $this->total_recipients === $this->sent_count;
     }
 }

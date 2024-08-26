@@ -9,27 +9,6 @@
     class="btn btn-primary absolute right-11 top-10 bg-green-500 py-2 px-4 text-white font-bold rounded-lg shadow-md hover:bg-green-600 hover:shadow-lg hover:text-gray-100">
     Import
 </button>
-<script>
-    document.getElementById('importButton').addEventListener('click', function () {
-    fetch('{{ route('import.data') }}', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert(data.success);
-        } else if (data.error) {
-            alert('Import failed: ' + data.error);
-        }
-    })
-    .catch(error => console.error('Error:', error));
-});
-</script>
-
 
 <div class="container mx-auto">
     <div class="bg-white p-6 rounded-lg shadow-lg">
@@ -110,8 +89,7 @@
             <!-- Add Message Template Button -->
             <div class="mb-4">
                 <a href="{{ route('message_templates.create') }}"
-                    class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200 ease-in-out">Add
-                    New Template</a>
+                    class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-200 ease-in-out">Add New Template</a>
             </div>
 
             <!-- Message Templates Table -->
@@ -164,11 +142,13 @@
                             <th class="py-3 px-4 border-b font-medium text-gray-700">Recipient Type</th>
                             <th class="py-3 px-4 border-b font-medium text-gray-700">Message</th>
                             <th class="py-3 px-4 border-b font-medium text-gray-700">Message Type</th>
-                            <th class="py-3 px-4 border-b font-medium text-gray-700">Created At</th> <!-- New Header -->
+                            <th class="py-3 px-4 border-b font-medium text-gray-700">Created At</th>
                             <th class="py-3 px-4 border-b font-medium text-gray-700">Scheduled At</th>
                             <th class="py-3 px-4 border-b font-medium text-gray-700">Sent At</th>
                             <th class="py-3 px-4 border-b font-medium text-gray-700">Status</th>
-                            <!-- Add Status Header -->
+                            <th class="py-3 px-4 border-b font-medium text-gray-700">Total Recipients</th>
+                            <th class="py-3 px-4 border-b font-medium text-gray-700">Successful Deliveries</th>
+                            <th class="py-3 px-4 border-b font-medium text-gray-700">Failed Messages</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -178,7 +158,8 @@
                             <td class="py-3 px-4 border-b text-gray-600">{{ $log->recipient_type }}</td>
                             <td class="py-3 px-4 border-b text-gray-600">{{ $log->content }}</td>
                             <td class="py-3 px-4 border-b text-gray-600">{{ $log->schedule }}</td>
-                            <td class="py-3 px-4 border-b text-gray-600"> {{ $log->created_at->format('F j, Y g:i A') }} <!-- Display Created At -->
+                            <td class="py-3 px-4 border-b text-gray-600">
+                                {{ $log->created_at->format('F j, Y g:i A') }}
                             </td>
                             <td class="py-3 px-4 border-b text-gray-600">
                                 {{ $log->scheduled_at ? $log->scheduled_at->format('F j, Y g:i A') : 'N/A' }}
@@ -187,7 +168,9 @@
                                 {{ $log->sent_at ? $log->sent_at->format('F j, Y g:i A') : 'N/A' }}
                             </td>
                             <td class="py-3 px-4 border-b text-gray-600">{{ $log->status }}</td>
-                            <!-- Display Status -->
+                            <td class="py-3 px-4 border-b text-gray-600">{{ $log->total_recipients }}</td>
+                            <td class="py-3 px-4 border-b text-gray-600">{{ $log->sent_count }}</td>
+                            <td class="py-3 px-4 border-b text-gray-600">{{ $log->failed_count }}</td>
                         </tr>
                         @endforeach
 

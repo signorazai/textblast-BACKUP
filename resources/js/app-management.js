@@ -1,3 +1,4 @@
+//This is for the tabs highlight (DO NOT MODIFY)
 document.addEventListener('DOMContentLoaded', function () {
     const buttons = document.querySelectorAll('.tab-button');
     const hiddenInput = document.getElementById('selected_tab');
