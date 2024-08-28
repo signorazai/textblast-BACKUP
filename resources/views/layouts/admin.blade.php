@@ -16,7 +16,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
         :root {
-            --primary-bg: ##C3CBDC;
+            --primary-bg: #C3CBDC;
             --primary-text: #000000;
             --secondary-bg: #FFFFFF;
             --secondary-text: #757575;
@@ -257,8 +257,8 @@
         <div class="absolute w-full h-36 shadow-md bg-primary z-0"></div>
         <div class="relative flex-1 p-8">
             <!-- Page Content -->
-            <h1 class="text-2xl font-semibold mb-4 text-primary">@yield('title')</h1>
-            <div class="mt-10">
+            <h1 class="text-2xl font-semibold mb-4 text-white">@yield('title')</h1>
+            <div class="">
                 @yield('content')
             </div>
         </div>
