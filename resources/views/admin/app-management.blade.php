@@ -9,7 +9,7 @@
     Import
 </button>
 
-    <script>
+    {{-- <script>
     document.getElementById('importButton').addEventListener('click', function() {
         fetch('{{ route('
                 import.data ') }}', {
@@ -29,7 +29,7 @@
             })
             .catch(error => console.error('Error:', error));
     });
-</script>
+</script> --}}
 
 <div class="container mx-auto">
     <div class="bg-white p-6 rounded-lg shadow-lg">
