@@ -70,3 +70,13 @@ Route::get('/api/contacts', [FilterController::class, 'getContacts']);
 Route::get('/api/recipients/count', [MessageController::class, 'getRecipientCount']);
 Route::get('/api/progress/{logId}', [MessageController::class, 'getProgress']);
 Route::get('/api/analytics', [MessageController::class, 'getAnalyticsData'])->name('api.analytics');
+
+
+//AnalyticsFilterRoutes
+use App\Http\Controllers\AnalyticsFilterController;
+
+Route::get('/analytics/colleges', [AnalyticsFilterController::class, 'getCollegesByCampus']);
+Route::get('/analytics/programs', [AnalyticsFilterController::class, 'getProgramsByCollege']);
+Route::get('/analytics/years', [AnalyticsFilterController::class, 'getAllYears']);
+
+
