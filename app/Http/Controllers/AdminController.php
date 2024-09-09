@@ -79,10 +79,17 @@ class AdminController extends Controller
         $statuses = Status::all();
         $types = Type::all();
 
+        // Set the threshold for low balance
+        $warningThreshold = 0.065; // Adjust as needed
+
+        // Check if the balance is low
+        $lowBalance = $balance < $warningThreshold;
+
         // Log the balance value
         Log::info('Movider Balance:', ['balance' => $balance]);
 
-        return view('admin.analytics', compact('balance', 'campuses', 'years', 'offices', 'statuses', 'types'));
+        return view('admin.analytics', compact('balance', 'lowBalance', 'campuses', 'years', 'offices', 'statuses', 'types'));
+
     }
 
 

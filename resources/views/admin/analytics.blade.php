@@ -6,8 +6,27 @@
     <div class="container mx-auto">
         <div class="bg-white p-6 rounded-lg shadow-md">
 
-            <!-- Stats Summary -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+            <!-- Warning Message -->
+            @if ($lowBalance)
+                <div class="bg-red-500 text-white p-4 rounded-lg mb-6">
+                    <h2 class="text-xl font-bold">Warning: Low SMS Balance</h2>
+                    <p>Your SMS balance is running low. Please recharge to avoid service interruption.</p>
+                </div>
+            @endif
+
+            <!-- Date Range Filter -->
+            <div class="mb-4">
+                <label for="date-range" class="block text-sm font-medium text-gray-700">Select Date Range:</label>
+                <select id="date-range"
+                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                    <option value="last_7_days">Last 7 Days</option>
+                    <option value="last_30_days">Last 30 Days</option>
+                    <option value="last_3_months">Last 3 Months</option>
+                </select>
+            </div>
+
+            <!-- Number of Messages and Balance -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div class="bg-blue-100 p-4 rounded-lg">
                     <h2 class="text-xl font-bold">Total Messages Sent</h2>
                     <p class="text-2xl font-semibold" id="total-sent">0</p>
@@ -25,46 +44,39 @@
                     <p class="text-2xl font-semibold" id="total-immediate">0</p>
                 </div>
                 <div class="bg-purple-100 p-4 rounded-lg">
+                    <h2 class="text-xl font-bold">Cancelled Messages</h2>
+                    <p class="text-2xl font-semibold" id="total-cancelled">0</p>
+                </div>
+                <div class="bg-purple-100 p-4 rounded-lg">
                     <h2 class="text-xl font-bold">Remaining Balance</h2>
                     <p class="text-2xl font-semibold" id="remaining-balance">{{ $balance }}</p>
                 </div>
             </div>
-
-            <!-- Date Range, Campus, and Recipient Type Filters -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
-                <div class="col-span-1">
-                    <label for="date-range" class="block text-sm font-medium text-gray-700">Select Date Range:</label>
-                    <select id="date-range"
-                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                        <option value="last_7_days">Last 7 Days</option>
-                        <option value="last_30_days">Last 30 Days</option>
-                        <option value="last_3_months">Last 3 Months</option>
-                    </select>
-                </div>
-
-                <div class="col-span-1">
-                    <label for="campus" class="block text-sm font-medium text-gray-700">Select Campus:</label>
-                    <select id="campus"
-                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                        <option value="" disabled selected>Select Campus</option>
-                        <option value="all">All Campuses</option>
-                        @foreach ($campuses as $campus)
-                            <option value="{{ $campus->campus_id }}">{{ $campus->campus_name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div class="col-span-1">
-                    <label for="recipient-type" class="block text-sm font-medium text-gray-700">Select Recipient Type:</label>
-                    <select id="recipient-type"
-                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
-                        <option value="" disabled selected>Select Recipient Type</option>
-                        <option value="student">Student</option>
-                        <option value="employee">Employee</option>
-                        <option value="both">Both</option>
-                    </select>
-                </div>
+            Recipient Type Filters
+            <div class="col-span-1">
+                <label for="campus" class="block text-sm font-medium text-gray-700">Select Campus:</label>
+                <select id="campus"
+                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                    <option value="" disabled selected>Select Campus</option>
+                    <option value="all">All Campuses</option>
+                    @foreach ($campuses as $campus)
+                        <option value="{{ $campus->campus_id }}">{{ $campus->campus_name }}</option>
+                    @endforeach
+                </select>
             </div>
+
+            <div class="col-span-1">
+                <label for="recipient-type" class="block text-sm font-medium text-gray-700">Select Recipient
+                    Type:</label>
+                <select id="recipient-type"
+                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                    <option value="" disabled selected>Select Recipient Type</option>
+                    <option value="student">Student</option>
+                    <option value="employee">Employee</option>
+                    <option value="both">Both</option>
+                </select>
+            </div>
+
 
             <!-- Conditional Filters Based on Recipient Type -->
             <div id="student-filters" class="mb-4 hidden">
@@ -154,7 +166,7 @@
             </div>
         </div>
     </div>
-
+    </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -191,9 +203,11 @@
                     fetch(`/analytics/colleges?campus_id=${campusId}`)
                         .then(response => response.json())
                         .then(data => {
-                            collegeSelect.innerHTML = '<option value="" disabled selected>Select College</option>';
+                            collegeSelect.innerHTML =
+                                '<option value="" disabled selected>Select College</option>';
                             data.forEach(college => {
-                                collegeSelect.innerHTML += `<option value="${college.college_id}">${college.college_name}</option>`;
+                                collegeSelect.innerHTML +=
+                                    `<option value="${college.college_id}">${college.college_name}</option>`;
                             });
                             collegeSelect.disabled = false;
                         })
@@ -207,9 +221,11 @@
                     fetch(`/analytics/programs?college_id=${collegeId}`)
                         .then(response => response.json())
                         .then(data => {
-                            programSelect.innerHTML = '<option value="" disabled selected>Select Program</option>';
+                            programSelect.innerHTML =
+                                '<option value="" disabled selected>Select Program</option>';
                             data.forEach(program => {
-                                programSelect.innerHTML += `<option value="${program.program_id}">${program.program_name}</option>`;
+                                programSelect.innerHTML +=
+                                    `<option value="${program.program_id}">${program.program_name}</option>`;
                             });
                             programSelect.disabled = false;
                         })
@@ -223,7 +239,8 @@
                 .then(data => {
                     yearSelect.innerHTML = '<option value="" disabled selected>Select Year</option>';
                     data.forEach(year => {
-                        yearSelect.innerHTML += `<option value="${year.year_id}">${year.year_name}</option>`;
+                        yearSelect.innerHTML +=
+                            `<option value="${year.year_id}">${year.year_name}</option>`;
                     });
                 })
                 .catch(error => console.error('Error fetching years:', error));
@@ -250,7 +267,7 @@
 
             const ctx = document.getElementById('messagesChart').getContext('2d');
             let messagesChart = new Chart(ctx, {
-                type: 'line',
+                type: 'bar',
                 data: {
                     labels: [],
                     datasets: [{
@@ -289,5 +306,8 @@
             recipientTypeSelect.addEventListener('change', updateAnalytics);
         });
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/7.0.0/docx.min.js"></script>
+    @vite(['resources/js/analytics.js'])
 
 @endsection
