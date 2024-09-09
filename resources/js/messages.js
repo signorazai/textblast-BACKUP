@@ -11,13 +11,11 @@ document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.tab-button').forEach(function (button) {
         button.addEventListener('click', function () {
             // Update the hidden broadcast_type input based on the clicked tab
-            document.getElementById('broadcast_type').value = this.getAttribute(
-                'data-value');
+            document.getElementById('broadcast_type').value = this.getAttribute('data-value');
 
             // Highlight the active tab and remove highlight from others
             document.querySelectorAll('.tab-button').forEach(function (btn) {
-                btn.classList.remove('border-b-2', 'border-indigo-500',
-                    'text-indigo-500');
+                btn.classList.remove('border-b-2', 'border-indigo-500', 'text-indigo-500');
             });
             this.classList.add('border-b-2', 'border-indigo-500', 'text-indigo-500');
 
@@ -67,16 +65,35 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Call updateRecipientCount whenever filters change
-    document.getElementById('campus').addEventListener('change', updateRecipientCount);
-    document.getElementById('college').addEventListener('change', updateRecipientCount);
-    document.getElementById('program').addEventListener('change', updateRecipientCount);
-    document.getElementById('year').addEventListener('change', updateRecipientCount);
-    document.getElementById('office').addEventListener('change', updateRecipientCount);
-    document.getElementById('status').addEventListener('change', updateRecipientCount);
-    document.getElementById('type').addEventListener('change', updateRecipientCount);
     // Initialize the recipient count on page load
     updateRecipientCount();
+
+    // Polling for progress updates if a logId is present
+    const logIdElement = document.getElementById('progress-container');
+    if (logIdElement && logIdElement.dataset.logId) {
+        const logId = logIdElement.dataset.logId;
+        const pollInterval = 5000; // Poll every 5 seconds
+
+        // Update the progress based on the current logId
+        function updateProgress() {
+            fetch(`/api/progress/${logId}`)
+                .then(response => response.json())
+                .then(data => {
+                    const percentageSent = data.percentageSent;
+                    document.getElementById('progress-label').textContent = `${percentageSent}% Sent`;
+                    document.getElementById('progress-percent').textContent = `${percentageSent}%`;
+                    document.getElementById('progress-bar').style.width = `${percentageSent}%`;
+
+                    if (percentageSent < 100) {
+                        setTimeout(updateProgress, pollInterval);
+                    }
+                })
+                .catch(error => console.error('Error fetching progress:', error));
+        }
+
+        // Start polling
+        updateProgress();
+    }
 });
 
 function toggleFilters() {
@@ -154,41 +171,25 @@ function updateSelectOptions(selectId, options) {
 
 function clearDropdownOptions(selectId) {
     var select = document.getElementById(selectId);
-    select.innerHTML = '<option value="" disabled selected>Select ' + selectId.charAt(0).toUpperCase() + selectId
-        .slice(1) + '</option>';
-    select.innerHTML += '<option value="all">All ' + selectId.charAt(0).toUpperCase() + selectId.slice(1) +
-        '</option>';
+    select.innerHTML = '<option value="" disabled selected>Select ' + selectId.charAt(0).toUpperCase() + selectId.slice(1) + '</option>';
+    select.innerHTML += '<option value="all">All ' + selectId.charAt(0).toUpperCase() + selectId.slice(1) + '</option>';
 }
 
 function updateProgramDropdown() {
     var collegeId = document.getElementById('college').value;
 
     // Reset the program dropdown
-    // clearDropdownOptions('program');
-
-    // if (collegeId === 'all') {
-    //     return;
-    // }
-
-    // if (collegeId) {
-    //     // Make an AJAX request to get the dependent programs based on the selected college
-    //     fetch(`/api/filters/college/${collegeId}/programs`)
-    //         .then(response => response.json())
-    //         .then(data => {
-    //             updateSelectOptions('program', data.programs);
-    //         });
-    // }
-    // Reset the program dropdown
     clearDropdownOptions('program');
 
-    if (collegeId === 'all') return;
+    if (collegeId === 'all') {
+        return;
+    }
 
     if (collegeId) {
-        console.log(`Making fetch request to /api/filters/college/${collegeId}/programs`);
+        // Make an AJAX request to get the dependent programs based on the selected college
         fetch(`/api/filters/college/${collegeId}/programs`)
             .then(response => response.json())
             .then(data => {
-                console.log("Received program data:", data);
                 updateSelectOptions('program', data.programs);
             });
     }
@@ -211,29 +212,6 @@ function updateTypeDropdown() {
             });
     }
 }
-
-// function updateRecipientCount() {
-//     const broadcastType = document.getElementById('broadcast_type').value;
-//     const campusId = document.getElementById('campus').value;
-//     const collegeId = document.getElementById('college') ? document.getElementById('college').value : null;
-//     const programId = document.getElementById('program') ? document.getElementById('program').value : null;
-//     const yearId = document.getElementById('year') ? document.getElementById('year').value : null;
-//     const officeId = document.getElementById('office') ? document.getElementById('office').value : null;
-//     const statusId = document.getElementById('status') ? document.getElementById('status').value : null;
-//     const typeId = document.getElementById('type') ? document.getElementById('type').value : null;
-//     // Set default total recipients to 0
-//     document.getElementById('total_recipients').textContent = 'Total recipients: 0';
-//     fetch(
-//         `/api/recipients/count?broadcast_type=${broadcastType}&campus_id=${campusId}&college_id=${collegeId}&program_id=${programId}&year_id=${yearId}&office_id=${officeId}&status_id=${statusId}&type_id=${typeId}`)
-//         .then(response => response.json())
-//         .then(data => {
-//             document.getElementById('total_recipients').textContent = `Total recipients: ${data.total}`;
-//         })
-//         .catch(error => {
-//             console.error('Error fetching recipient count:', error);
-//             document.getElementById('total_recipients').textContent = 'Error fetching recipient count';
-//         });
-// }
 
 function updateRecipientCount() {
     const broadcastType = document.getElementById('broadcast_type').value;

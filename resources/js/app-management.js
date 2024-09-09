@@ -25,12 +25,6 @@ document.addEventListener('DOMContentLoaded', function () {
     buttons[0].click();
 });
 
-// Trigger the "Contacts" tab to be open by default on page load
-document.addEventListener('DOMContentLoaded', function () {
-    document.querySelector('[href="#contacts"]').click();
-});
-
-
 // JavaScript to handle fetching, displaying, and searching contacts
 document.addEventListener('DOMContentLoaded', function () {
     const campusSelect = document.getElementById('campus');
@@ -54,12 +48,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 } else {
                     data.forEach(contact => {
                         const row = `<tr class="hover:bg-gray-50 transition duration-150 ease-in-out">
-                                            <td class="py-3 px-4 border-b text-gray-600">${contact.stud_fname || contact.emp_fname}</td>
-                                            <td class="py-3 px-4 border-b text-gray-600">${contact.stud_lname || contact.emp_lname}</td>
-                                            <td class="py-3 px-4 border-b text-gray-600">${contact.stud_mname || contact.emp_mname || ''}</td>
-                                            <td class="py-3 px-4 border-b text-gray-600">${contact.stud_contact || contact.emp_contact}</td>
-                                            <td class="py-3 px-4 border-b text-gray-600">${contact.stud_email || contact.emp_email}</td>
-                                        </tr>`;
+                                        <td class="py-3 px-4 border-b text-gray-600">${contact.stud_fname || contact.emp_fname}</td>
+                                        <td class="py-3 px-4 border-b text-gray-600">${contact.stud_lname || contact.emp_lname}</td>
+                                        <td class="py-3 px-4 border-b text-gray-600">${contact.stud_mname || contact.emp_mname || ''}</td>
+                                        <td class="py-3 px-4 border-b text-gray-600">${contact.stud_contact || contact.emp_contact}</td>
+                                        <td class="py-3 px-4 border-b text-gray-600">${contact.stud_email || contact.emp_email}</td>
+                                    </tr>`;
                         contactsTableBody.insertAdjacentHTML('beforeend', row);
                     });
                 }
