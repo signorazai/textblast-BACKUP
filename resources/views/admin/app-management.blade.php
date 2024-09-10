@@ -9,27 +9,26 @@
     Import
 </button>
 
-    {{-- <script>
-    document.getElementById('importButton').addEventListener('click', function() {
-        fetch('{{ route('
-                import.data ') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
-                })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert(data.success);
-                } else if (data.error) {
-                    alert('Import failed: ' + data.error);
-                }
-            })
-            .catch(error => console.error('Error:', error));
+<script>
+    document.getElementById('importButton').addEventListener('click', function () {
+        fetch('{{ route('import.data') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.success);
+            } else if (data.error) {
+                alert('Import failed: ' + data.error);
+            }
+        })
+        .catch(error => console.error('Error:', error));
     });
-</script> --}}
+</script>
 
 <div class="container mx-auto">
     <div class="bg-white p-6 rounded-lg shadow-lg">

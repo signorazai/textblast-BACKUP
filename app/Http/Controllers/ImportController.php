@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log; // Import the Log facade
 use App\Models\College;
 use App\Models\Program;
+use App\Models\Year; // Import the Year model
 
 class ImportController extends Controller
 {
@@ -14,7 +15,7 @@ class ImportController extends Controller
     {
         try {
             // Import Colleges
-            $remoteColleges = DB::connection('sqlsrv1')->table('vw_college_TB')->select('CollegeID', 'CollegeName')->get();
+            $remoteColleges = DB::connection('sqlsrv1')->table('dbo.vw_college_TB')->select('CollegeID', 'CollegeName')->get();
 
             foreach ($remoteColleges as $remoteCollege) {
                 College::updateOrCreate(
@@ -28,7 +29,7 @@ class ImportController extends Controller
             }
 
             // Import Programs
-            $remotePrograms = DB::connection('sqlsrv1')->table('vw_es_programs_TB')->select('ProgID', 'ProgName', 'CollegeID')->get();
+            $remotePrograms = DB::connection('sqlsrv1')->table('dbo.vw_es_programs_TB')->select('ProgID', 'ProgName', 'CollegeID')->get();
 
             foreach ($remotePrograms as $remoteProgram) {
                 // Find the associated college
@@ -48,6 +49,19 @@ class ImportController extends Controller
                     // Log or handle the case where the college does not exist
                     Log::warning("College ID {$remoteProgram->CollegeID} not found. Program ID {$remoteProgram->ProgID} skipped.");
                 }
+            }
+
+            // Import Years
+            $remoteYears = DB::connection('sqlsrv1')->table('dbo.vw_YearLevel_TB')->select('Yearlevelid', 'Yearlevel')->get();
+
+            foreach ($remoteYears as $remoteYear) {
+                Year::updateOrCreate(
+                    ['year_id' => $remoteYear->Yearlevelid],
+                    [
+                        'year_name' => $remoteYear->Yearlevel,
+                        'updated_at' => now(),
+                    ]
+                );
             }
 
             return response()->json(['success' => 'Data imported successfully!']);
