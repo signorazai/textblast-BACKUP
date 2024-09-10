@@ -7,6 +7,7 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\MessageTemplateController;
 use App\Http\Controllers\SubAdminController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ImportController;
 
 // Authentication Routes
 Route::get('/', [AuthController::class, 'index']);
@@ -78,5 +79,10 @@ use App\Http\Controllers\AnalyticsFilterController;
 Route::get('/analytics/colleges', [AnalyticsFilterController::class, 'getCollegesByCampus']);
 Route::get('/analytics/programs', [AnalyticsFilterController::class, 'getProgramsByCollege']);
 Route::get('/analytics/years', [AnalyticsFilterController::class, 'getAllYears']);
+
+
+//ImportRoutes
+Route::post('/import', [ImportController::class, 'importData'])->name('import.data');
+
 
 
