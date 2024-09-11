@@ -4,32 +4,48 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log; // Import the Log facade
+use Illuminate\Support\Facades\Log;
 use App\Models\College;
 use App\Models\Program;
-use App\Models\Year; // Import the Year model
+use App\Models\Year;
 
 class ImportController extends Controller
 {
     public function importData(Request $request)
     {
+        $campusId = $request->input('campus_id', 'all'); // Get the campus ID from the request, default to 'all'
+
         try {
             // Import Colleges
-            $remoteColleges = DB::connection('sqlsrv1')->table('dbo.vw_college_TB')->select('CollegeID', 'CollegeName')->get();
+            $remoteColleges = DB::connection('sqlsrv1')->table('dbo.vw_college_TB')->select('CollegeID', 'CollegeName', 'CampusID');
+
+            // If a specific campus is selected, filter by CampusID
+            if ($campusId !== 'all') {
+                $remoteColleges = $remoteColleges->where('CampusID', $campusId);
+            }
+
+            $remoteColleges = $remoteColleges->get();
 
             foreach ($remoteColleges as $remoteCollege) {
                 College::updateOrCreate(
                     ['college_id' => $remoteCollege->CollegeID],
                     [
                         'college_name' => $remoteCollege->CollegeName,
-                        'campus_id' => 1, // Assuming a default value or logic to determine campus_id
+                        'campus_id' => $remoteCollege->CampusID,
                         'updated_at' => now(),
                     ]
                 );
             }
 
             // Import Programs
-            $remotePrograms = DB::connection('sqlsrv1')->table('dbo.vw_es_programs_TB')->select('ProgID', 'ProgName', 'CollegeID')->get();
+            $remotePrograms = DB::connection('sqlsrv1')->table('dbo.vw_es_programs_TB')->select('ProgID', 'ProgName', 'CollegeID', 'CampusID');
+
+            // If a specific campus is selected, filter programs by CampusID
+            if ($campusId !== 'all') {
+                $remotePrograms = $remotePrograms->where('CampusID', $campusId);
+            }
+
+            $remotePrograms = $remotePrograms->get();
 
             foreach ($remotePrograms as $remoteProgram) {
                 // Find the associated college
@@ -51,7 +67,7 @@ class ImportController extends Controller
                 }
             }
 
-            // Import Years
+            // Import Years (not dependent on campus selection)
             $remoteYears = DB::connection('sqlsrv1')->table('dbo.vw_YearLevel_TB')->select('Yearlevelid', 'Yearlevel')->get();
 
             foreach ($remoteYears as $remoteYear) {
@@ -66,7 +82,9 @@ class ImportController extends Controller
 
             return response()->json(['success' => 'Data imported successfully!']);
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+            // Log the error for debugging purposes
+            Log::error("Data import failed: " . $e->getMessage());
+            return response()->json(['error' => 'Data import failed: ' . $e->getMessage()], 500);
         }
     }
 }
