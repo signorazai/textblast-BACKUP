@@ -8,6 +8,7 @@ use App\Http\Controllers\MessageTemplateController;
 use App\Http\Controllers\SubAdminController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ImportController;
+use App\Http\Middleware\CheckRole;
 
 // Authentication Routes
 Route::get('/', [AuthController::class, 'index']);
@@ -15,8 +16,18 @@ Route::get('auth/google', [AuthController::class, 'redirectToGoogle'])->name('go
 Route::get('auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('google.callback');
 Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 
-// Admin Routes (with authentication middleware)
-Route::middleware(['auth'])->group(function () {
+Route::get('/login', function () {
+    return redirect()->route('google.login');
+})->name('login');
+
+Route::get('/access-denied', function () {
+    return view('access-denied');
+})->name('access.denied');
+
+Route::post('login/email', [AuthController::class, 'loginWithEmail'])->name('login.email');
+
+// Admin Routes (with authentication and role middleware)
+Route::middleware(['auth', CheckRole::class . ':admin'])->group(function () {
     // Dashboard
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
@@ -25,6 +36,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/admin/broadcast', [MessageController::class, 'broadcastToRecipients'])->name('admin.broadcastToRecipients');
     Route::post('/admin/review-message', [MessageController::class, 'reviewMessage'])->name('admin.reviewMessage');
     Route::post('/admin/send-messages', [MessageController::class, 'sendBulkMessages'])->name('admin.send-messages');
+    Route::post('/admin/messages/cancel/{id}', [MessageController::class, 'cancelScheduledMessage'])->name('admin.cancelScheduledMessage');
 
     // Message Logs
     Route::get('/admin/message-logs', [MessageController::class, 'getMessageLogs'])->name('admin.messageLogs');
@@ -50,14 +62,20 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/admin/app-management', [AdminController::class, 'appManagement'])->name('admin.app-management');
 });
 
-// Sub-Admin Routes (with authentication middleware)
-Route::middleware(['auth'])->group(function () {
+// Sub-Admin Routes (with authentication and role middleware)
+Route::middleware(['auth', CheckRole::class . ':subadmin'])->group(function () {
     // Dashboard
     Route::get('/subadmin/dashboard', [SubAdminController::class, 'dashboard'])->name('subadmin.dashboard');
 
     // Messages
-    Route::get('/subadmin/messages', [SubAdminController::class, 'messages'])->name('subadmin.messages');
-    Route::post('/subadmin/messages/broadcast', [SubAdminController::class, 'broadcastMessages'])->name('subadmin.broadcast');
+    Route::get('/subadmin/messages', [MessageController::class, 'showMessagesForm'])->name('subadmin.messages');
+    Route::post('/subadmin/broadcast', [MessageController::class, 'broadcastToRecipients'])->name('subadmin.broadcastToRecipients');
+    Route::post('/subadmin/review-message', [MessageController::class, 'reviewMessage'])->name('subadmin.reviewMessage');
+    Route::post('/subadmin/send-messages', [MessageController::class, 'sendBulkMessages'])->name('subadmin.send-messages');
+    //Route::post('/subadmin/messages/cancel/{id}', [MessageController::class, 'cancelScheduledMessage'])->name('subadmin.cancelScheduledMessage');
+
+    // Message Logs
+    //Route::get('/admin/message-logs', [MessageController::class, 'getMessageLogs'])->name('admin.messageLogs');
 
     // Analytics
     Route::get('/subadmin/analytics', [SubAdminController::class, 'analytics'])->name('subadmin.analytics');
