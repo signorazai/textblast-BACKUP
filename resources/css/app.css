@@ -1,3 +1,107 @@
-@tailwind base;
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
+
+/* @tailwind base;
 @tailwind components;
-@tailwind utilities;
+@tailwind utilities; */
+
+:root {
+    --primary-bg: #c3cbdc;
+    --primary-text: #000000;
+    --secondary-bg: #ffffff;
+    --secondary-text: #757575;
+
+    /* For the Navigation Link Button State */
+    --button-text: #291e13;
+    --button-hover-text: #6a6a6a;
+    --button-selected-text: #000000;
+    --button-selected-bg: #e5e7eb;
+}
+
+body {
+    font-family: "Inter", sans-serif;
+    background-color: var(--secondary-bg);
+    color: var(--secondary-text);
+}
+
+.bg-primary {
+    background-color: var(--primary-bg);
+}
+
+.text-primary {
+    color: var(--primary-text);
+}
+
+.w-73 {
+    width: 18.25rem;
+    /* 73 x 0.25rem */
+}
+
+.ml-73 {
+    margin-left: 18.25rem; /* 73 x 0.25rem */
+}
+
+/* LOGO */
+.text-gradient {
+    background: linear-gradient(90deg, #614514, #c78e29);
+    background-clip: text; /* Standard property for modern browsers */
+    -webkit-background-clip: text; /* Vendor prefix for older WebKit browsers */
+    -webkit-text-fill-color: transparent;
+}
+
+.z-50 {
+    z-index: 50;
+}
+
+.dropdown-item {
+    width: 100%;
+    padding: 0.5rem 1rem;
+    text-align: left;
+    display: block;
+}
+
+.dropdown-item:hover {
+    background-color: #f3f3f3;
+}
+
+/* BUTTON STATES */
+.button-default {
+    color: var(--button-text);
+}
+
+.button-hover:hover {
+    color: var(--button-hover-text);
+}
+
+.button-selected {
+    color: var(--button-selected-text);
+    background-color: var(--button-selected-bg);
+}
+
+/* SYSTEM THEMES */
+[data-theme="dark"] {
+    --primary-bg: #1c4e80;
+    --primary-text: #000000;
+    --secondary-bg: #7c909a;
+    --secondary-text: #000000;
+}
+
+[data-theme="light"] {
+    --primary-text: #000000;
+    --secondary-bg: #ffffff;
+    --secondary-text: #757575;
+}
+
+/* Export Button for Analytics Page */
+#exportChartButton {
+    margin-right: 0;
+}
+
+#exportDropdown {
+    top: 40px;
+    /* Adjust this value if needed to better align the dropdown */
+}
+
+.highlight {
+    background-color: yellow;
+    font-weight: bold;
+}

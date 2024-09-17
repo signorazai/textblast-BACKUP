@@ -4,7 +4,6 @@
 
 @section('content')
 
-
 <button type="button" onclick="openModal('collegeImportModal')" class="btn btn-primary">Import College</button>
 <button type="button" onclick="openModal('programImportModal')" class="btn btn-primary">Import Program</button>
 <button type="button" onclick="openModal('majorImportModal')" class="btn btn-primary">Import Major</button>
@@ -229,15 +228,17 @@ Import
 
         <!-- Contacts Tab -->
         <div id="contacts" class="tab-content">
-            <!-- Filters Selection (Updated to be inline) -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
-                <div>
+            <!-- Filters Selection -->
+            <div class="grid grid-cols-12 gap-4 mb-4">
+                <!-- Search Contacts (Spans 5 out of 12 columns) -->
+                <div class="col-span-5">
                     <label for="contactsSearch" class="block text-sm font-medium text-gray-700">Search Contacts</label>
                     <input type="text" id="contactsSearch" placeholder="Search for contacts..."
                         class="block w-full mt-1 border border-gray-300 rounded-md shadow-sm p-2">
                 </div>
 
-                <div>
+                <!-- Select Campus (Spans 3 out of 12 columns) -->
+                <div class="col-span-3">
                     <label for="campus" class="block text-sm font-medium text-gray-700">Select Campus</label>
                     <select name="campus" id="campus"
                         class="block w-full mt-1 border border-gray-300 rounded-md shadow-sm p-2">
@@ -248,7 +249,8 @@ Import
                     </select>
                 </div>
 
-                <div>
+                <!-- Filter By (Spans 3 out of 12 columns) -->
+                <div class="col-span-3 mr-3">
                     <label for="filter" class="block text-sm font-medium text-gray-700">Filter By</label>
                     <select name="filter" id="filter"
                         class="block w-full mt-1 border border-gray-300 rounded-md shadow-sm p-2">
@@ -256,6 +258,14 @@ Import
                         <option value="students">Students</option>
                         <option value="employees">Employees</option>
                     </select>
+                </div>
+
+                <!-- Import Button (Spans 1 out of 12 columns, Aligned Right with Padding Adjusted) -->
+                <div class="col-span-1 flex justify-end items-center">
+                    <button type="button"
+                        class="bg-green-500 py-2 px-4 mt-5 text-white font-bold rounded-lg shadow-md hover:bg-green-600 hover:shadow-lg hover:text-gray-100">
+                        Import
+                    </button>
                 </div>
             </div>
 
@@ -269,6 +279,7 @@ Import
                             <th class="py-3 px-4 border-b font-semibold text-gray-500 text-left">Middle Name</th>
                             <th class="py-3 px-4 border-b font-semibold text-gray-500 text-left">Contact</th>
                             <th class="py-3 px-4 border-b font-semibold text-gray-500 text-left">Email</th>
+                            <th class="py-3 px-4 border-b font-semibold text-gray-500 text-left">Actions</th> <!-- Add Action Column -->
                         </tr>
                     </thead>
                     <tbody id="contactsTableBody">
@@ -314,17 +325,24 @@ Import
                                 @endif
                             </td>
                             <td class="py-3 px-4 border-b text-gray-600">
-                                <div class="flex space-x-2">
-                                    <a href="{{ route('message_templates.edit', $template->id) }}"
-                                        class="text-blue-500 hover:underline">
-                                        <x-tni-edit-circle class="w-9 h-9" />
-                                    </a>
-                                    <form action="{{ route('message_templates.destroy', $template->id) }}"
-                                        method="POST" class="inline-block">
+                                <div class="flex items-center space-x-2">
+                                    <!-- Edit Button with Icon -->
+                                    <form action="{{ route('message_templates.edit', $template->id) }}" method="GET" class="inline">
+                                        <button type="submit" class="focus:outline-none">
+                                            <div class="rounded-full bg-blue-500 p-2 hover:bg-blue-600 flex items-center justify-center" title="Edit">
+                                                <img src="{{ asset('images/edit.png') }}" alt="Edit" class="h-5 w-5" style="filter: brightness(0) invert(1);">
+                                            </div>
+                                        </button>
+                                    </form>
+
+                                    <!-- Delete Button with Icon -->
+                                    <form action="{{ route('message_templates.destroy', $template->id) }}" method="POST" class="inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="focus:outline-none">
-                                            <x-mdi-delete-circle class="w-10 h-10 text-red-500" />
+                                            <div class="rounded-full bg-red-500 p-2 hover:bg-red-600 flex items-center justify-center" title="Delete">
+                                                <img src="{{ asset('images/delete.png') }}" alt="Delete" class="h-5 w-5" style="filter: brightness(0) invert(1);">
+                                            </div>
                                         </button>
                                     </form>
                                 </div>
@@ -334,8 +352,7 @@ Import
 
                         @if ($messageTemplates->isEmpty())
                         <tr>
-                            <td colspan="3" class="text-center py-4 text-gray-500">No message templates found.
-                            </td>
+                            <td colspan="3" class="text-center py-4 text-gray-500">No message templates found.</td>
                         </tr>
                         @endif
                     </tbody>
@@ -413,10 +430,14 @@ Import
                                 @if ($log->status === 'Pending')
                                 <form action="{{ route('admin.cancelScheduledMessage', $log->id) }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="text-red-500 hover:underline">Cancel</button>
+                                    <button type="submit" class="text-red-500 hover:underline">
+                                        <div class="rounded-full bg-red-500 p-2 hover:bg-red-600" title="Cancel Send">
+                                            <img src="/images/cancel.png" alt="Remove Access" class="h-5 w-5" style="filter: brightness(0) invert(1);">
+                                        </div>
+                                    </button>
                                 </form>
                                 @else
-                                <span class="text-gray-400">Cannot Cancel</span>
+                                <span class="text-gray-400">N/A</span>
                                 @endif
                             </td>
                         </tr>
@@ -434,7 +455,31 @@ Import
     </div>
 </div>
 
-
+<!-- Modal for Editing Contact -->
+<div id="editContactModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75" aria-hidden="true"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">​</span>
+        <div class="inline-block overflow-hidden transition-all transform bg-white rounded-lg shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="px-4 py-4 bg-white">
+                <h3 class="text-lg font-medium leading-6 text-gray-900" id="modal-title">Edit Contact Number</h3>
+                <div class="mt-2">
+                    <label for="editContactInput" class="block text-sm font-medium text-gray-700">New Contact Number</label>
+                    <input type="text" id="editContactInput" class="block w-full px-4 py-2 mt-1 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    <input type="hidden" id="editContactEmail" value="">
+                </div>
+            </div>
+            <div class="px-4 py-3 bg-gray-50 sm:flex sm:flex-row-reverse">
+                <button type="button" id="saveContactBtn" class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm sm:ml-3 sm:w-auto sm:text-sm">
+                    Save
+                </button>
+                <button type="button" id="cancelContactBtn" class="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm sm:mt-0 sm:w-auto sm:text-sm">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @vite([
 'resources/js/app.css',
@@ -442,4 +487,4 @@ Import
 'resources/js/searchMessageLogs.js',
 'resources/js/modal.js'
 ])
-@endsection 
+@endsection

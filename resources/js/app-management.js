@@ -1,9 +1,17 @@
-//This is for the tabs highlight (DO NOT MODIFY)
+// This is for the tabs highlight (DO NOT MODIFY)
 document.addEventListener('DOMContentLoaded', function () {
     const buttons = document.querySelectorAll('.tab-button');
     const hiddenInput = document.getElementById('selected_tab');
 
+    // Get the current tab from the URL (query parameter)
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentTab = urlParams.get('tab') || 'contacts';  // Default to 'contacts' tab
+
+    // Set the hidden input value based on the URL parameter
+    hiddenInput.value = currentTab;
+
     buttons.forEach(button => {
+        // Add click event listener for each button
         button.addEventListener('click', function () {
             // Remove the active state from all buttons
             buttons.forEach(btn => btn.classList.remove('text-indigo-500', 'border-b-2', 'border-indigo-500'));
@@ -14,23 +22,30 @@ document.addEventListener('DOMContentLoaded', function () {
             // Update the hidden input value
             hiddenInput.value = this.getAttribute('data-value');
 
-            // Handle tab content display (assuming you have tab content divs)
+            // Handle tab content display
             const tabContents = document.querySelectorAll('.tab-content');
             tabContents.forEach(content => content.classList.add('hidden'));
             document.getElementById(this.getAttribute('data-value')).classList.remove('hidden');
         });
     });
 
-    // Trigger the first tab to be open by default on page load
-    buttons[0].click();
+    // Automatically activate the tab from the URL parameter or the default one
+    document.querySelector(`[data-value="${currentTab}"]`).click();
 });
 
-// JavaScript to handle fetching, displaying, and searching contacts
+// JavaScript to handle fetching, displaying, searching, and editing contacts
 document.addEventListener('DOMContentLoaded', function () {
     const campusSelect = document.getElementById('campus');
     const filterSelect = document.getElementById('filter');
     const contactsTableBody = document.getElementById('contactsTableBody');
     const contactsSearch = document.getElementById('contactsSearch');
+    const editContactModal = document.getElementById('editContactModal');
+    const editContactInput = document.getElementById('editContactInput');
+    const editContactEmail = document.getElementById('editContactEmail');
+    const saveContactBtn = document.getElementById('saveContactBtn');
+    const cancelContactBtn = document.getElementById('cancelContactBtn');
+
+    let currentEmail = '';
 
     // Function to fetch and display contacts
     function fetchContacts() {
@@ -53,6 +68,11 @@ document.addEventListener('DOMContentLoaded', function () {
                                         <td class="py-3 px-4 border-b text-gray-600">${contact.stud_mname || contact.emp_mname || ''}</td>
                                         <td class="py-3 px-4 border-b text-gray-600">${contact.stud_contact || contact.emp_contact}</td>
                                         <td class="py-3 px-4 border-b text-gray-600">${contact.stud_email || contact.emp_email}</td>
+                                        <td class="py-3 px-4 border-b text-gray-600">
+                                            <button class="edit-contact text-blue-500 hover:underline" data-email="${contact.stud_email || contact.emp_email}" data-contact="${contact.stud_contact || contact.emp_contact}">
+                                                Edit
+                                            </button>
+                                        </td>
                                     </tr>`;
                         contactsTableBody.insertAdjacentHTML('beforeend', row);
                     });
@@ -87,6 +107,58 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // Handle clicking "Edit" in the contacts table
+    contactsTableBody.addEventListener('click', function (e) {
+        if (e.target && e.target.matches('.edit-contact')) {
+            const email = e.target.dataset.email;
+            const contact = e.target.dataset.contact;
+
+            currentEmail = email; // Set the email of the recipient to edit
+
+            // Populate the modal with current contact details
+            editContactInput.value = contact;
+            editContactEmail.value = email;
+
+            // Show the modal
+            editContactModal.classList.remove('hidden');
+        }
+    });
+
+    // Handle saving the new contact number
+    saveContactBtn.addEventListener('click', function () {
+        const newContactNumber = editContactInput.value;
+
+        fetch(`/api/contacts/update`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            },
+            body: JSON.stringify({
+                email: currentEmail,
+                contact_number: newContactNumber,
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Close the modal and refresh the contact list
+                editContactModal.classList.add('hidden');
+                fetchContacts();
+            } else {
+                alert('Failed to update contact');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+
+    // Handle cancel button
+    cancelContactBtn.addEventListener('click', function () {
+        editContactModal.classList.add('hidden');
+    });
+
     // Event listeners to trigger fetching contacts
     campusSelect.addEventListener('change', fetchContacts);
     filterSelect.addEventListener('change', fetchContacts);
@@ -96,47 +168,3 @@ document.addEventListener('DOMContentLoaded', function () {
     fetchContacts();
 });
 
-// document.addEventListener('DOMContentLoaded', function () {
-//     const importButton = document.getElementById('importButton');
-//     const importModal = document.getElementById('importModal');
-//     const confirmImportButton = document.getElementById('confirmImportButton');
-//     const cancelImportButton = document.getElementById('cancelImportButton');
-//     const campusSelect = document.getElementById('campusSelect');
-
-//     // Show the modal when the import button is clicked
-//     importButton.addEventListener('click', function () {
-//         importModal.classList.remove('hidden');
-//     });
-
-//     // Hide the modal when the cancel button is clicked
-//     cancelImportButton.addEventListener('click', function () {
-//         importModal.classList.add('hidden');
-//     });
-
-//     // Handle the import process when the confirm button is clicked
-//     confirmImportButton.addEventListener('click', function () {
-//         const selectedCampus = campusSelect.value;
-//         const importUrl = importButton.getAttribute('data-import-url'); // Get the URL from the data attribute
-
-//         fetch(importUrl, {
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json',
-//                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
-//             },
-//             body: JSON.stringify({ campus_id: selectedCampus })
-//         })
-//         .then(response => response.json())
-//         .then(data => {
-//             if (data.success) {
-//                 alert(data.success);
-//             } else if (data.error) {
-//                 alert('Import failed: ' + data.error);
-//             }
-
-//             // Hide the modal after the import
-//             importModal.classList.add('hidden');
-//         })
-//         .catch(error => console.error('Error:', error));
-//     });
-// });
