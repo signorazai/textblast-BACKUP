@@ -4,47 +4,181 @@
 
 @section('content')
 
-<!-- Import Button to trigger the modal -->
-<button type="button" id="importButton"
-    data-import-url="{{ route('import.data') }}"
-    class="btn btn-primary absolute right-8 top-7 bg-green-500 py-2 px-4 text-white font-bold rounded-lg shadow-md hover:bg-green-600 hover:shadow-lg hover:text-gray-100">
-    Import
-</button>
 
+<button type="button" onclick="openModal('collegeImportModal')" class="btn btn-primary">Import College</button>
+<button type="button" onclick="openModal('programImportModal')" class="btn btn-primary">Import Program</button>
+<button type="button" onclick="openModal('majorImportModal')" class="btn btn-primary">Import Major</button>
+<button type="button" onclick="openModal('yearImportModal')" class="btn btn-primary">Import Year</button>
 
-<!-- Modal for Import with Campus Selection -->
-<div id="importModal" class="fixed z-10 inset-0 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">​</span>
-
-        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Import Data</h3>
-                <div class="mt-3">
-                    <label for="campusSelect" class="block text-sm font-medium text-gray-700">Select Campus</label>
-                    <select id="campusSelect" class="block w-full mt-1 border border-gray-300 rounded-md shadow-sm p-2">
-                        <option value="all">All Campuses</option>
-                        @foreach ($campuses as $campus)
-                            <option value="{{ $campus->campus_id }}">{{ $campus->campus_name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                <button type="button" id="confirmImportButton"
-                    class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-500 text-base font-medium text-white hover:bg-green-600 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
-                    Import
-                </button>
-                <button type="button" id="cancelImportButton"
-                    class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                    Cancel
-                </button>
+<!-- College Import Modal -->
+<div id="collegeImportModal" class="modal hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg shadow-lg w-1/3">
+        <div class="p-4">
+            <h3 class="text-lg font-bold mb-4">Import Colleges</h3>
+            <label for="campusSelectCollege" class="block text-sm font-medium text-gray-700">Select Campus</label>
+            <select id="campusSelectCollege" class="w-full mt-1 border-gray-300 rounded-md shadow-sm">
+                @foreach ($campuses as $campus)
+                <option value="{{ $campus->campus_id }}">{{ $campus->campus_name }}</option>
+                @endforeach
+            </select>
+            <div class="flex justify-end mt-4">
+                <button class="bg-gray-400 px-4 py-2 rounded-lg mr-2" onclick="closeModal('collegeImportModal')">Close</button>
+                <button id="importCollegeBtn" class="bg-green-500 px-4 py-2 text-white rounded-lg">Import</button>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Program Import Modal -->
+<div id="programImportModal" class="modal hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg shadow-lg w-1/3">
+        <div class="p-4">
+            <h3 class="text-lg font-bold mb-4">Import Programs</h3>
+            <label for="campusSelectProgram" class="block text-sm font-medium text-gray-700">Select Campus</label>
+            <select id="campusSelectProgram" class="w-full mt-1 border-gray-300 rounded-md shadow-sm">
+                @foreach ($campuses as $campus)
+                <option value="{{ $campus->campus_id }}">{{ $campus->campus_name }}</option>
+                @endforeach
+            </select>
+            <div class="flex justify-end mt-4">
+                <button class="bg-gray-400 px-4 py-2 rounded-lg mr-2" onclick="closeModal('programImportModal')">Close</button>
+                <button id="importProgramBtn" class="bg-green-500 px-4 py-2 text-white rounded-lg">Import</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Major Import Modal -->
+<div id="majorImportModal" class="modal hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg shadow-lg w-1/3">
+        <div class="p-4">
+            <h3 class="text-lg font-bold mb-4">Import Majors</h3>
+            <label for="campusSelectMajor" class="block text-sm font-medium text-gray-700">Select Campus</label>
+            <select id="campusSelectMajor" class="w-full mt-1 border-gray-300 rounded-md shadow-sm">
+                @foreach ($campuses as $campus)
+                <option value="{{ $campus->campus_id }}">{{ $campus->campus_name }}</option>
+                @endforeach
+            </select>
+            <div class="flex justify-end mt-4">
+                <button class="bg-gray-400 px-4 py-2 rounded-lg mr-2" onclick="closeModal('majorImportModal')">Close</button>
+                <button id="importMajorBtn" class="bg-green-500 px-4 py-2 text-white rounded-lg">Import</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Year Import Modal -->
+<div id="yearImportModal" class="modal hidden fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg shadow-lg w-1/3">
+        <div class="p-4">
+            <h3 class="text-lg font-bold mb-4">Import Years</h3>
+            <div class="flex justify-end mt-4">
+                <button class="bg-gray-400 px-4 py-2 rounded-lg mr-2" onclick="closeModal('yearImportModal')">Close</button>
+                <button id="importYearBtn" class="bg-green-500 px-4 py-2 text-white rounded-lg">Import</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.remove('hidden');
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+    }
+
+    document.getElementById('importCollegeBtn').addEventListener('click', function () {
+        const campusId = document.getElementById('campusSelectCollege').value;
+
+        fetch('{{ route('import.college') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ campus_id: campusId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.success);
+                closeModal('collegeImportModal');
+            } else if (data.error) {
+                alert('Import failed: ' + data.error);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+    document.getElementById('importProgramBtn').addEventListener('click', function () {
+        const campusId = document.getElementById('campusSelectProgram').value;
+
+        fetch('{{ route('import.program') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ campus_id: campusId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.success);
+                closeModal('programImportModal');
+            } else if (data.error) {
+                alert('Import failed: ' + data.error);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+    document.getElementById('importMajorBtn').addEventListener('click', function () {
+        const campusId = document.getElementById('campusSelectMajor').value;
+
+        fetch('{{ route('import.major') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ campus_id: campusId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.success);
+                closeModal('majorImportModal');
+            } else if (data.error) {
+                alert('Import failed: ' + data.error);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+    document.getElementById('importYearBtn').addEventListener('click', function () {
+
+        fetch('{{ route('import.year') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.success);
+                closeModal('yearImportModal');
+            } else if (data.error) {
+                alert('Import failed: ' + data.error);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+</script>
 
 {{-- <button type="button" id="importButton"
 class="btn btn-primary absolute right-8 top-7 bg-green-500 py-2 px-4 text-white font-bold rounded-lg shadow-md hover:bg-green-600 hover:shadow-lg hover:text-gray-100">

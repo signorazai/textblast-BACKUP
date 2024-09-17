@@ -99,8 +99,11 @@ Route::get('/analytics/programs', [AnalyticsFilterController::class, 'getProgram
 Route::get('/analytics/years', [AnalyticsFilterController::class, 'getAllYears']);
 
 
-//ImportRoutes
-Route::post('/import', [ImportController::class, 'importData'])->name('import.data');
+// //ImportRoutes
+// Route::post('/import', [ImportController::class, 'importData'])->name('import.data');
 
-
-
+// Import routes
+Route::post('/import/college', [ImportController::class, 'importCollege'])->name('import.college');
+Route::post('/import/program', [ImportController::class, 'importProgram'])->name('import.program');
+Route::post('/import/major', [ImportController::class, 'importMajor'])->name('import.major');
+Route::post('/import/year', [ImportController::class, 'importYear'])->name('import.year');

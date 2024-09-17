@@ -96,47 +96,47 @@ document.addEventListener('DOMContentLoaded', function () {
     fetchContacts();
 });
 
-document.addEventListener('DOMContentLoaded', function () {
-    const importButton = document.getElementById('importButton');
-    const importModal = document.getElementById('importModal');
-    const confirmImportButton = document.getElementById('confirmImportButton');
-    const cancelImportButton = document.getElementById('cancelImportButton');
-    const campusSelect = document.getElementById('campusSelect');
+// document.addEventListener('DOMContentLoaded', function () {
+//     const importButton = document.getElementById('importButton');
+//     const importModal = document.getElementById('importModal');
+//     const confirmImportButton = document.getElementById('confirmImportButton');
+//     const cancelImportButton = document.getElementById('cancelImportButton');
+//     const campusSelect = document.getElementById('campusSelect');
 
-    // Show the modal when the import button is clicked
-    importButton.addEventListener('click', function () {
-        importModal.classList.remove('hidden');
-    });
+//     // Show the modal when the import button is clicked
+//     importButton.addEventListener('click', function () {
+//         importModal.classList.remove('hidden');
+//     });
 
-    // Hide the modal when the cancel button is clicked
-    cancelImportButton.addEventListener('click', function () {
-        importModal.classList.add('hidden');
-    });
+//     // Hide the modal when the cancel button is clicked
+//     cancelImportButton.addEventListener('click', function () {
+//         importModal.classList.add('hidden');
+//     });
 
-    // Handle the import process when the confirm button is clicked
-    confirmImportButton.addEventListener('click', function () {
-        const selectedCampus = campusSelect.value;
-        const importUrl = importButton.getAttribute('data-import-url'); // Get the URL from the data attribute
+//     // Handle the import process when the confirm button is clicked
+//     confirmImportButton.addEventListener('click', function () {
+//         const selectedCampus = campusSelect.value;
+//         const importUrl = importButton.getAttribute('data-import-url'); // Get the URL from the data attribute
 
-        fetch(importUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({ campus_id: selectedCampus })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert(data.success);
-            } else if (data.error) {
-                alert('Import failed: ' + data.error);
-            }
+//         fetch(importUrl, {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
+//             },
+//             body: JSON.stringify({ campus_id: selectedCampus })
+//         })
+//         .then(response => response.json())
+//         .then(data => {
+//             if (data.success) {
+//                 alert(data.success);
+//             } else if (data.error) {
+//                 alert('Import failed: ' + data.error);
+//             }
 
-            // Hide the modal after the import
-            importModal.classList.add('hidden');
-        })
-        .catch(error => console.error('Error:', error));
-    });
-});
+//             // Hide the modal after the import
+//             importModal.classList.add('hidden');
+//         })
+//         .catch(error => console.error('Error:', error));
+//     });
+// });
