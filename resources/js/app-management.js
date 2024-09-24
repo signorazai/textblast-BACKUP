@@ -167,4 +167,3 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initial fetch on page load
     fetchContacts();
 });
-

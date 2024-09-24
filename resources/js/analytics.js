@@ -79,10 +79,6 @@ document.addEventListener('DOMContentLoaded', function () {
             } else if (recipientType === 'both') {
                 studentFilters.classList.remove('hidden');
                 employeeFilters.classList.remove('hidden');
-            } else if (recipientType === 'both' || recipientType === 'all') {
-                // If "All Recipients" is selected, hide both student and employee filters
-                studentFilters.classList.add('hidden');
-                employeeFilters.classList.add('hidden');
             }
 
             // Fetch new analytics data on recipient change

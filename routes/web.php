@@ -6,9 +6,8 @@ use App\Http\Controllers\FilterController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\MessageTemplateController;
 use App\Http\Controllers\SubAdminController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ImportController;
 use App\Http\Middleware\CheckRole;
+use Illuminate\Support\Facades\Route;
 
 // Authentication Routes
 Route::get('/', [AuthController::class, 'index']);
@@ -60,6 +59,9 @@ Route::middleware(['auth', CheckRole::class . ':admin'])->group(function () {
 
     // App Management
     Route::get('/admin/app-management', [AdminController::class, 'appManagement'])->name('admin.app-management');
+    
+    // Update Contact Number
+    Route::post('/admin/update-contact-number', [AdminController::class, 'updateContactNumber'])->name('admin.update-contact-number');
 });
 
 // Sub-Admin Routes (with authentication and role middleware)
@@ -72,10 +74,7 @@ Route::middleware(['auth', CheckRole::class . ':subadmin'])->group(function () {
     Route::post('/subadmin/broadcast', [MessageController::class, 'broadcastToRecipients'])->name('subadmin.broadcastToRecipients');
     Route::post('/subadmin/review-message', [MessageController::class, 'reviewMessage'])->name('subadmin.reviewMessage');
     Route::post('/subadmin/send-messages', [MessageController::class, 'sendBulkMessages'])->name('subadmin.send-messages');
-    //Route::post('/subadmin/messages/cancel/{id}', [MessageController::class, 'cancelScheduledMessage'])->name('subadmin.cancelScheduledMessage');
-
-    // Message Logs
-    //Route::get('/admin/message-logs', [MessageController::class, 'getMessageLogs'])->name('admin.messageLogs');
+    Route::post('/subadmin/messages/cancel/{id}', [MessageController::class, 'cancelScheduledMessage'])->name('subadmin.cancelScheduledMessage');
 
     // Analytics
     Route::get('/subadmin/analytics', [SubAdminController::class, 'analytics'])->name('subadmin.analytics');
@@ -89,21 +88,4 @@ Route::get('/api/contacts', [FilterController::class, 'getContacts']);
 Route::get('/api/recipients/count', [MessageController::class, 'getRecipientCount']);
 Route::get('/api/progress/{logId}', [MessageController::class, 'getProgress']);
 Route::get('/api/analytics', [MessageController::class, 'getAnalyticsData'])->name('api.analytics');
-
-
-//AnalyticsFilterRoutes
-use App\Http\Controllers\AnalyticsFilterController;
-
-Route::get('/analytics/colleges', [AnalyticsFilterController::class, 'getCollegesByCampus']);
-Route::get('/analytics/programs', [AnalyticsFilterController::class, 'getProgramsByCollege']);
-Route::get('/analytics/years', [AnalyticsFilterController::class, 'getAllYears']);
-
-
-// //ImportRoutes
-// Route::post('/import', [ImportController::class, 'importData'])->name('import.data');
-
-// Import routes
-Route::post('/import/college', [ImportController::class, 'importCollege'])->name('import.college');
-Route::post('/import/program', [ImportController::class, 'importProgram'])->name('import.program');
-Route::post('/import/major', [ImportController::class, 'importMajor'])->name('import.major');
-Route::post('/import/year', [ImportController::class, 'importYear'])->name('import.year');
+Route::get('/api/filters/program/{programId}/majors', [FilterController::class, 'getMajorsByProgram']);
