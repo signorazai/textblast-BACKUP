@@ -89,3 +89,13 @@ Route::get('/api/recipients/count', [MessageController::class, 'getRecipientCoun
 Route::get('/api/progress/{logId}', [MessageController::class, 'getProgress']);
 Route::get('/api/analytics', [MessageController::class, 'getAnalyticsData'])->name('api.analytics');
 Route::get('/api/filters/program/{programId}/majors', [FilterController::class, 'getMajorsByProgram']);
+
+use App\Http\Controllers\ImportController;
+
+Route::middleware(['auth'])->group(function () {
+    // Import Routes
+    Route::post('/import/college', [ImportController::class, 'importCollege'])->name('import.college');
+    Route::post('/import/program', [ImportController::class, 'importProgram'])->name('import.program');
+    Route::post('/import/major', [ImportController::class, 'importMajor'])->name('import.major');
+    Route::post('/import/year', [ImportController::class, 'importYear'])->name('import.year');
+});
