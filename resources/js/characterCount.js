@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const charWarning = document.getElementById('charWarning');
     const maxCharLimit = 160;
     const templateSelect = document.getElementById('template'); // Message template dropdown
+    const reviewButton = document.getElementById('reviewButton');
 
     // Function to update character count and display warning if needed
     function updateCharacterCount() {
@@ -13,8 +14,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (messageLength > maxCharLimit) {
             charWarning.classList.remove('hidden'); // Show warning message
+            reviewButton.disabled = true; // Disable review button
         } else {
             charWarning.classList.add('hidden'); // Hide warning message
+            reviewButton.disabled = false; // Enable review button
         }
     }
 
@@ -172,4 +175,7 @@ document.addEventListener('DOMContentLoaded', function () {
             errorElement.remove();  // Remove the error message
         }
     }
+
+    // Initialize character count on page load
+    updateCharacterCount();
 });
