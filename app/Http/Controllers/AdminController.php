@@ -135,28 +135,30 @@ class AdminController extends Controller
     }
 
     public function analytics(MoviderService $moviderService)
-    {
-        $balanceData = $moviderService->getBalance();
-        $balance = $balanceData['balance'] ?? 0;
+{
+    // Fetch necessary data for the filters
+    $campuses = Campus::all();
+    $years = Year::all();
+    $offices = Office::all();
+    $statuses = Status::all();
+    $types = Type::all();
+    $colleges = College::all();      // Fetch colleges
+    $programs = Program::all();      // Fetch programs
+    $majors = Major::all();          // Fetch majors
 
-        // Fetch campuses, years, offices, statuses, and types from the database
-        $campuses = Campus::all();
-        $years = Year::all();
-        $offices = Office::all();
-        $statuses = Status::all();
-        $types = Type::all();
+    // Fetch balance using Movider Service
+    $balanceData = $moviderService->getBalance();
+    $balance = $balanceData['balance'] ?? 0;
 
-        // Set the threshold for low balance
-        $warningThreshold = 0.065; // Adjust as needed
+    // Set the threshold for low balance
+    $warningThreshold = 0.065; // Adjust as needed
+    $lowBalance = $balance < $warningThreshold;
 
-        // Check if the balance is low
-        $lowBalance = $balance < $warningThreshold;
-
-        // Log the balance value
-        Log::info('Movider Balance:', ['balance' => $balance]);
-
-        return view('admin.analytics', compact('balance', 'lowBalance', 'campuses', 'years', 'offices', 'statuses', 'types'));
-    }
+    // Pass all data to the view, including filters and balance data
+    return view('admin.analytics', compact(
+        'balance', 'lowBalance', 'campuses', 'years', 'offices', 'statuses', 'types', 'colleges', 'programs', 'majors'
+    ));
+}
 
     public function userManagement()
     {
