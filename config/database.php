@@ -55,6 +55,18 @@ return [
         'prefix_indexes' => true,
     ],
 
+    'sqlsrv2' => [
+        'driver' => 'sqlsrv',
+        'host' => env('DB_SQLSRV2_HOST', 'localhost'),
+        'port' => env('DB_SQLSRV2_PORT', '1433'),
+        'database' => env('DB_SQLSRV1_DATABASE', 'StudentsDB'),
+        'username' => env('DB_SQLSRV1_USERNAME', 'SampleOwner'),
+        'password' => env('DB_SQLSRV1_PASSWORD', '123'),
+        'charset' => 'utf8',
+        'prefix' => '',
+        'prefix_indexes' => true,
+    ],
+
 ],
 
 

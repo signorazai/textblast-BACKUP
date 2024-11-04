@@ -9,6 +9,7 @@ use App\Models\College;
 use App\Models\Program;
 use App\Models\Major;
 use App\Models\Year;
+use App\Models\Student;
 
 class ImportController extends Controller
 {
@@ -184,4 +185,75 @@ class ImportController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    public function importStudents(Request $request)
+{
+    try {
+        $campusId = $request->campus_id;
+        $remoteStudents = DB::connection('sqlsrv1')->table('dbo.StudentsDB')
+            ->select('StudentNo', 'FirstName', 'LastName', 'MobileNo', 'Email', 'CollegeID', 'ProgID', 'MajorID', 'YearLevelID')
+            ->get();
+
+        $remoteStudentIds = $remoteStudents->pluck('StudentNo')->toArray();
+
+        // Delete local records that no longer exist in the remote data
+        Student::where('campus_id', $campusId)->whereNotIn('stud_id', $remoteStudentIds)->delete();
+
+        foreach ($remoteStudents as $remoteStudent) {
+            $localStudent = Student::where('stud_id', $remoteStudent->StudentNo)->first();
+
+            if ($localStudent) {
+                // Update if there are changes
+                if (
+                    $localStudent->stud_fname !== $remoteStudent->FirstName ||
+                    $localStudent->stud_lname !== $remoteStudent->LastName ||
+                    $localStudent->stud_contact !== $remoteStudent->MobileNo ||
+                    $localStudent->stud_email !== $remoteStudent->Email ||
+                    $localStudent->campus_id !== $campusId ||
+                    $localStudent->college_id !== $remoteStudent->CollegeID ||
+                    $localStudent->program_id !== $remoteStudent->ProgID ||
+                    $localStudent->major_id !== $remoteStudent->MajorID ||
+                    $localStudent->year_id !== $remoteStudent->YearLevelID
+                ) {
+                    $localStudent->update([
+                        'stud_fname' => $remoteStudent->FirstName,
+                        'stud_lname' => $remoteStudent->LastName,
+                        'stud_contact' => $remoteStudent->MobileNo,
+                        'stud_email' => $remoteStudent->Email,
+                        'campus_id' => $campusId,
+                        'college_id' => $remoteStudent->CollegeID,
+                        'program_id' => $remoteStudent->ProgID,
+                        'major_id' => $remoteStudent->MajorID,
+                        'year_id' => $remoteStudent->YearLevelID,
+                        'enrollment_stat' => $localStudent->enrollment_stat ?? 'active', // Default if missing
+                        'updated_at' => now(),
+                    ]);
+                }
+            } else {
+                // Insert new record
+                Student::create([
+                    'stud_id' => $remoteStudent->StudentNo,
+                    'stud_fname' => $remoteStudent->FirstName,
+                    'stud_lname' => $remoteStudent->LastName,
+                    'stud_mname' => null, // Middle name is not provided in StudentsDB
+                    'stud_contact' => $remoteStudent->MobileNo,
+                    'stud_email' => $remoteStudent->Email,
+                    'campus_id' => $campusId,
+                    'college_id' => $remoteStudent->CollegeID,
+                    'program_id' => $remoteStudent->ProgID,
+                    'major_id' => $remoteStudent->MajorID,
+                    'year_id' => $remoteStudent->YearLevelID,
+                    'enrollment_stat' => 'active', // Default status if not provided
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        }
+
+        return response()->json(['success' => 'Students imported successfully!']);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+}
+
 }

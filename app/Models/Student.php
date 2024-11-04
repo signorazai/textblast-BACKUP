@@ -50,4 +50,9 @@ class Student extends Model
     {
         return $this->belongsTo(Year::class, 'year_id', 'year_id');
     }
+
+    public function student()
+    {
+        return $this->belongsTo(Student::class, 'stud_id', 'stud_id');
+    }
 }

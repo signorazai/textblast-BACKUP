@@ -110,4 +110,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/import/program', [ImportController::class, 'importProgram'])->name('import.program');
     Route::post('/import/major', [ImportController::class, 'importMajor'])->name('import.major');
     Route::post('/import/year', [ImportController::class, 'importYear'])->name('import.year');
+    Route::post('/import/students', [ImportController::class, 'importStudents'])->name('import.students');
+
 });
+
+Route::get('/api/analytics/export-excel', [AnalyticsController::class, 'exportExcel']);
